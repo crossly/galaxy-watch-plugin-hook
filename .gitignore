@@ -25,3 +25,4 @@ jadx-out/
 build.log
 docs/plans/
 device-framework/
+private/
