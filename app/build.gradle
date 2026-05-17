@@ -1,0 +1,38 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "dev.ricky.galaxywatchselfheal"
+    compileSdk 35
+
+    def releaseVersionCode = providers.gradleProperty("releaseVersionCode")
+            .map { it as Integer }
+            .orElse(1)
+    def releaseVersionName = providers.gradleProperty("releaseVersionName")
+            .orElse("0.1.0(1)")
+
+    defaultConfig {
+        applicationId "dev.ricky.galaxywatchselfheal"
+        minSdk 26
+        targetSdk 35
+        versionCode releaseVersionCode.get()
+        versionName releaseVersionName.get()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = false
+    }
+}
+
+dependencies {
+    compileOnly project(":xposed-stubs")
+    testImplementation "junit:junit:4.13.2"
+}
