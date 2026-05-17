@@ -152,6 +152,7 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub Release
+        if: steps.version.outputs.is_tag_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ env.SIGNED_APK }}
