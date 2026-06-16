@@ -8,9 +8,9 @@ android {
 
     def releaseVersionCode = providers.gradleProperty("releaseVersionCode")
             .map { it as Integer }
-            .orElse(1)
+            .orElse(101)
     def releaseVersionName = providers.gradleProperty("releaseVersionName")
-            .orElse("0.1.0(1)")
+            .orElse("0.1.1")
 
     defaultConfig {
         applicationId "dev.ricky.galaxywatchselfheal"

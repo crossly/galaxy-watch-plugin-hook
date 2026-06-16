@@ -113,6 +113,7 @@ public final class HookEntry implements IXposedHookLoadPackage {
                     continue;
                 }
 
+                ensureObservedWhenPresent(associationStore, association);
                 connectedMethod.invoke(devicePresenceProcessor, associationId, userId);
                 log("requested companion BT connected event, associationId="
                         + associationId
@@ -121,6 +122,27 @@ public final class HookEntry implements IXposedHookLoadPackage {
             }
         } catch (Throwable t) {
             log("framework recovery failed: " + t);
+        }
+    }
+
+    private static void ensureObservedWhenPresent(Object associationStore, Object association) {
+        try {
+            Boolean isObserved = (Boolean) XposedHelpers.callMethod(
+                    association,
+                    "isNotifyOnDeviceNearby");
+            if (Boolean.TRUE.equals(isObserved)) {
+                return;
+            }
+
+            Class<?> associationInfoClass = Class.forName("android.companion.AssociationInfo");
+            Class<?> builderClass = Class.forName("android.companion.AssociationInfo$Builder");
+            Object builder = builderClass.getConstructor(associationInfoClass).newInstance(association);
+            XposedHelpers.callMethod(builder, "setNotifyOnDeviceNearby", true);
+            Object updatedAssociation = XposedHelpers.callMethod(builder, "build");
+            XposedHelpers.callMethod(associationStore, "updateAssociation", updatedAssociation);
+            log("enabled companion presence observation for Watch7 association");
+        } catch (Throwable t) {
+            log("unable to enable companion presence observation: " + t);
         }
     }
 

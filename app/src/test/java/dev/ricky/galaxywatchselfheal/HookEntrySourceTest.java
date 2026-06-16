@@ -32,6 +32,15 @@ public class HookEntrySourceTest {
         assertTrue(source.contains("onBluetoothCompanionDeviceConnected"));
     }
 
+    @Test
+    public void frameworkRecoveryMarksAssociationObservedBeforeConnectedEvent() throws Exception {
+        String source = read("app/src/main/java/dev/ricky/galaxywatchselfheal/HookEntry.java");
+
+        assertTrue(source.contains("android.companion.AssociationInfo$Builder"));
+        assertTrue(source.contains("setNotifyOnDeviceNearby"));
+        assertTrue(source.contains("updateAssociation"));
+    }
+
     private static String read(String path) throws Exception {
         Path root = Paths.get(System.getProperty("user.dir")).getParent();
         return new String(Files.readAllBytes(root.resolve(path)), StandardCharsets.UTF_8);
