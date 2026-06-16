@@ -8,9 +8,9 @@ android {
 
     def releaseVersionCode = providers.gradleProperty("releaseVersionCode")
             .map { it as Integer }
-            .orElse(101)
+            .orElse(102)
     def releaseVersionName = providers.gradleProperty("releaseVersionName")
-            .orElse("0.1.1")
+            .orElse("0.1.2")
 
     defaultConfig {
         applicationId "dev.ricky.galaxywatchselfheal"
@@ -30,9 +30,16 @@ android {
     testOptions {
         unitTests.includeAndroidResources = false
     }
+
+    packaging {
+        resources {
+            merges += "META-INF/xposed/*"
+        }
+    }
 }
 
 dependencies {
     compileOnly project(":xposed-stubs")
+    compileOnly "io.github.libxposed:api:101.0.1"
     testImplementation "junit:junit:4.13.2"
 }

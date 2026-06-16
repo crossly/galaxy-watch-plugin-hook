@@ -112,7 +112,7 @@ jobs:
               -keyalg RSA \
               -keysize 2048 \
               -validity 10000 \
-              -dname "CN=CI Release,O=Galaxy Watch Plugin Hook,C=US"
+              -dname "CN=CI Release,O=Samsung Watch Helper,C=US"
             {
               echo "keystore=release.keystore"
               echo "store_password=android"
@@ -133,7 +133,7 @@ jobs:
         run: |
           set -euo pipefail
           UNSIGNED_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
-          SIGNED_APK="app/build/outputs/apk/release/GalaxyWatchPluginHook-${VERSION}-release-signed.apk"
+          SIGNED_APK="app/build/outputs/apk/release/SamsungWatchHelper-${VERSION}-release-signed.apk"
           "${ANDROID_HOME}/build-tools/35.0.0/apksigner" sign \
             --ks "${KEYSTORE}" \
             --ks-pass "pass:${STORE_PASSWORD}" \
@@ -147,7 +147,7 @@ jobs:
       - name: Upload signed release APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: galaxy-watch-plugin-hook-release
+          name: samsung-watch-helper-release
           path: ${{ env.SIGNED_APK }}
           if-no-files-found: error
 

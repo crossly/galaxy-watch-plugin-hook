@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Galaxy Watch Plugin Hook</string>
+    <string name="app_name">Samsung Watch Helper</string>
     <string name="module_description">Keeps Galaxy Watch Plugin recoverable on Honor MagicOS without clearing Samsung app data.</string>
     <string-array name="xposedscope">
         <item>android</item>
+        <item>system</item>
         <item>com.samsung.android.app.watchmanager</item>
         <item>com.samsung.wearable.watch7plugin</item>
     </string-array>
