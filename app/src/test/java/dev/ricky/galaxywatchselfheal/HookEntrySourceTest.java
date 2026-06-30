@@ -98,10 +98,13 @@ public class HookEntrySourceTest {
         assertTrue(entrySource.contains("Watch7CapabilityExchangeHook.install"));
         assertTrue(hookSource.contains(
                 "com.samsung.android.companionservice.capability.CapabilityExchangeMessage"));
+        assertTrue(hookSource.contains(
+                "com.samsung.android.companionservice.capability.CapabilityExchangeSender"));
         assertTrue(hookSource.contains("\"data\""));
-        assertTrue(hookSource.contains("key_manufacturer"));
-        assertTrue(hookSource.contains("key_model_number"));
-        assertTrue(hookSource.contains("key_sales_code"));
+        assertTrue(hookSource.contains("vender"));
+        assertTrue(hookSource.contains("modelNumber"));
+        assertTrue(hookSource.contains("csc"));
+        assertTrue(hookSource.contains("setCapabilityMessage"));
         assertTrue(hookSource.contains("CompanionIdentityPolicy.usaSalesCode()"));
     }
 

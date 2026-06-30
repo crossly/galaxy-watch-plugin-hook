@@ -13,9 +13,11 @@ public final class Watch7CapabilityExchangeHook {
     private static final String TAG_PREFIX = "GalaxyWatchPluginHook: ";
     private static final String CAPABILITY_EXCHANGE_MESSAGE =
             "com.samsung.android.companionservice.capability.CapabilityExchangeMessage";
-    private static final String KEY_MANUFACTURER = "key_manufacturer";
-    private static final String KEY_MODEL_NUMBER = "key_model_number";
-    private static final String KEY_SALES_CODE = "key_sales_code";
+    private static final String CAPABILITY_EXCHANGE_SENDER =
+            "com.samsung.android.companionservice.capability.CapabilityExchangeSender";
+    private static final String FEATURE_VENDOR = "vender";
+    private static final String FEATURE_MODEL_NUMBER = "modelNumber";
+    private static final String FEATURE_CSC = "csc";
     private static volatile boolean installed;
 
     private Watch7CapabilityExchangeHook() {
@@ -36,10 +38,26 @@ public final class Watch7CapabilityExchangeHook {
                     spoofFeatureExchangeData(param.thisObject);
                 }
             });
+            hookCapabilitySender(classLoader);
             log("hooked Watch7 capability feature_exchange data");
         } catch (Throwable t) {
             log("Watch7 capability feature_exchange hook unavailable: " + t);
         }
+    }
+
+    private static void hookCapabilitySender(ClassLoader classLoader) {
+        XposedHelpers.findAndHookMethod(
+                CAPABILITY_EXCHANGE_SENDER,
+                classLoader,
+                "setCapabilityMessage",
+                XposedHelpers.findClass(CAPABILITY_EXCHANGE_MESSAGE, classLoader),
+                int.class,
+                new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        spoofFeatureExchangeData(param.args[0]);
+                    }
+                });
     }
 
     private static Constructor<?> findTwoArgumentConstructor(Class<?> messageClass)
@@ -60,10 +78,10 @@ public final class Watch7CapabilityExchangeHook {
         }
 
         Map<Object, Object> mutableData = new LinkedHashMap<>((Map<?, ?>) data);
-        Object originalVendor = mutableData.get(KEY_MANUFACTURER);
-        mutableData.put(KEY_MANUFACTURER, CompanionIdentityPolicy.samsungManufacturer());
-        mutableData.put(KEY_MODEL_NUMBER, CompanionIdentityPolicy.samsungModel());
-        mutableData.put(KEY_SALES_CODE, CompanionIdentityPolicy.usaSalesCode());
+        Object originalVendor = mutableData.get(FEATURE_VENDOR);
+        mutableData.put(FEATURE_VENDOR, CompanionIdentityPolicy.samsungManufacturer());
+        mutableData.put(FEATURE_MODEL_NUMBER, CompanionIdentityPolicy.samsungModel());
+        mutableData.put(FEATURE_CSC, CompanionIdentityPolicy.usaSalesCode());
         XposedHelpers.setObjectField(message, "data", mutableData);
         log("spoofed Watch7 feature_exchange vendor " + originalVendor
                 + " -> " + CompanionIdentityPolicy.samsungManufacturer());

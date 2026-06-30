@@ -4,6 +4,9 @@ public final class CompanionIdentityPolicy {
     public static final String KEY_MANUFACTURER = "key_manufacturer";
     public static final String KEY_MODEL_NUMBER = "key_model_number";
     public static final String KEY_SALES_CODE = "key_sales_code";
+    public static final String FEATURE_VENDOR = "vender";
+    public static final String FEATURE_MODEL_NUMBER = "modelNumber";
+    public static final String FEATURE_CSC = "csc";
 
     private static final String SAMSUNG_MANUFACTURER = "SAMSUNG";
     private static final String SAMSUNG_BRAND = "samsung";
@@ -16,13 +19,16 @@ public final class CompanionIdentityPolicy {
     }
 
     public static String spoofedValueFor(String preferenceKey, String originalValue) {
-        if (KEY_MANUFACTURER.equals(preferenceKey)) {
+        if (KEY_MANUFACTURER.equals(preferenceKey)
+                || FEATURE_VENDOR.equals(preferenceKey)) {
             return SAMSUNG_MANUFACTURER;
         }
-        if (KEY_MODEL_NUMBER.equals(preferenceKey)) {
+        if (KEY_MODEL_NUMBER.equals(preferenceKey)
+                || FEATURE_MODEL_NUMBER.equals(preferenceKey)) {
             return SAMSUNG_S25_ULTRA_MODEL;
         }
-        if (KEY_SALES_CODE.equals(preferenceKey)) {
+        if (KEY_SALES_CODE.equals(preferenceKey)
+                || FEATURE_CSC.equals(preferenceKey)) {
             return USA_SALES_CODE;
         }
         return originalValue;
@@ -31,7 +37,10 @@ public final class CompanionIdentityPolicy {
     public static boolean shouldSpoof(String preferenceKey) {
         return KEY_MANUFACTURER.equals(preferenceKey)
                 || KEY_MODEL_NUMBER.equals(preferenceKey)
-                || KEY_SALES_CODE.equals(preferenceKey);
+                || KEY_SALES_CODE.equals(preferenceKey)
+                || FEATURE_VENDOR.equals(preferenceKey)
+                || FEATURE_MODEL_NUMBER.equals(preferenceKey)
+                || FEATURE_CSC.equals(preferenceKey);
     }
 
     public static String systemPropertyValueFor(String key, String originalValue) {

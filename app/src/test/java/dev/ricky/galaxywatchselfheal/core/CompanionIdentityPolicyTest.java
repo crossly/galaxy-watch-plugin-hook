@@ -15,6 +15,13 @@ public class CompanionIdentityPolicyTest {
     }
 
     @Test
+    public void returnsSamsungIdentityForFeatureExchangeKeys() {
+        assertEquals("SAMSUNG", CompanionIdentityPolicy.spoofedValueFor("vender", "honor"));
+        assertEquals("SM-S938U", CompanionIdentityPolicy.spoofedValueFor("modelNumber", "BKQ-AN90"));
+        assertEquals("XAA", CompanionIdentityPolicy.spoofedValueFor("csc", "CHC"));
+    }
+
+    @Test
     public void leavesUnrelatedCapabilityValuesUntouched() {
         assertEquals("original", CompanionIdentityPolicy.spoofedValueFor("key_watch_sdk_version", "original"));
         assertFalse(CompanionIdentityPolicy.shouldSpoof("key_watch_sdk_version"));
@@ -25,6 +32,9 @@ public class CompanionIdentityPolicyTest {
         assertTrue(CompanionIdentityPolicy.shouldSpoof("key_manufacturer"));
         assertTrue(CompanionIdentityPolicy.shouldSpoof("key_model_number"));
         assertTrue(CompanionIdentityPolicy.shouldSpoof("key_sales_code"));
+        assertTrue(CompanionIdentityPolicy.shouldSpoof("vender"));
+        assertTrue(CompanionIdentityPolicy.shouldSpoof("modelNumber"));
+        assertTrue(CompanionIdentityPolicy.shouldSpoof("csc"));
     }
 
     @Test
