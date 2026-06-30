@@ -108,6 +108,21 @@ public class HookEntrySourceTest {
         assertTrue(hookSource.contains("CompanionIdentityPolicy.usaSalesCode()"));
     }
 
+    @Test
+    public void watch7PluginRefreshesCapabilityExchangeAfterConnectedState() throws Exception {
+        String entrySource = read("app/src/main/java/dev/ricky/galaxywatchselfheal/HookEntry.java");
+        String hookSource = read(
+                "app/src/main/java/dev/ricky/galaxywatchselfheal/Watch7CapabilityRefreshHook.java");
+
+        assertTrue(entrySource.contains("Watch7CapabilityRefreshHook.install"));
+        assertTrue(hookSource.contains(
+                "com.samsung.android.companionservice.service.CapabilityCompanion"));
+        assertTrue(hookSource.contains("onConnectionStateChanged"));
+        assertTrue(hookSource.contains("mLastestConnectedBtAddr"));
+        assertTrue(hookSource.contains("requestCapabilityExchange"));
+        assertTrue(hookSource.contains("GalaxyWatchPluginHook-WCS"));
+    }
+
     private static String read(String path) throws Exception {
         Path root = Paths.get(System.getProperty("user.dir")).getParent();
         return new String(Files.readAllBytes(root.resolve(path)), StandardCharsets.UTF_8);

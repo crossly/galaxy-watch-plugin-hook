@@ -46,6 +46,7 @@ public final class HookEntry implements IXposedHookLoadPackage {
             hookCompanionIdentityWrites(lpparam.classLoader);
             Watch7CompanionIdentityHook.install(lpparam.classLoader);
             Watch7CapabilityExchangeHook.install(lpparam.classLoader);
+            Watch7CapabilityRefreshHook.install(lpparam.classLoader);
             return;
         }
 
