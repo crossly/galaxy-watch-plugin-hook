@@ -21,6 +21,7 @@ public class ModuleMetadataTest {
         assertTrue(moduleProp.contains("staticScope=true"));
         assertTrue(scope.contains("android"));
         assertTrue(scope.contains("system"));
+        assertTrue(scope.contains("com.google.android.wearable.app.cn"));
         assertTrue(scope.contains("com.samsung.android.app.watchmanager"));
         assertTrue(scope.contains("com.samsung.wearable.watch7plugin"));
         assertTrue(javaInit.contains("dev.ricky.galaxywatchselfheal.ModernHookEntry"));
@@ -39,7 +40,10 @@ public class ModuleMetadataTest {
         String manifest = read("app/src/main/AndroidManifest.xml");
 
         assertTrue(manifest.contains("android:name=\"xposedscope\""));
-        assertTrue(manifest.contains("android:value=\"android;system;com.samsung.android.app.watchmanager;com.samsung.wearable.watch7plugin\""));
+        assertTrue(manifest.contains("com.google.android.wearable.app.cn"));
+        assertTrue(manifest.contains("com.samsung.android.app.watchmanager"));
+        assertTrue(manifest.contains("com.samsung.wearable.watch7plugin"));
+        assertTrue(!manifest.contains("com.samsung.android.shealthmonitor"));
     }
 
     private static String read(String path) throws Exception {

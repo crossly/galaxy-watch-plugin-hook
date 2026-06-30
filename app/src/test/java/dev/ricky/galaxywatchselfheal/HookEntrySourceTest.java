@@ -56,9 +56,22 @@ public class HookEntrySourceTest {
         String scopeList = read("app/src/main/resources/META-INF/xposed/scope.list");
         String manifest = read("app/src/main/AndroidManifest.xml");
 
+        assertTrue(strings.contains("com.google.android.wearable.app.cn"));
+        assertTrue(scopeList.contains("com.google.android.wearable.app.cn"));
+        assertTrue(manifest.contains("com.google.android.wearable.app.cn"));
         assertTrue(!strings.contains("com.samsung.android.shealthmonitor"));
         assertTrue(!scopeList.contains("com.samsung.android.shealthmonitor"));
         assertTrue(!manifest.contains("com.samsung.android.shealthmonitor"));
+    }
+
+    @Test
+    public void googleWearHookSpoofsPhoneIdentityWithoutWatchManagerBuildSpoof() throws Exception {
+        String source = read("app/src/main/java/dev/ricky/galaxywatchselfheal/HookEntry.java");
+
+        assertTrue(source.contains("com.google.android.wearable.app.cn"));
+        assertTrue(source.contains("setStaticObjectField(android.os.Build.class"));
+        assertTrue(source.contains("android.os.SystemProperties"));
+        assertTrue(source.contains("Samsung process hook is passive for"));
     }
 
     private static String read(String path) throws Exception {

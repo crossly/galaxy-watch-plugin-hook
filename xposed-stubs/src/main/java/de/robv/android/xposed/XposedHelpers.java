@@ -39,4 +39,8 @@ public final class XposedHelpers {
     public static void setObjectField(Object obj, String fieldName, Object value) {
         throw new UnsupportedOperationException("Stub only");
     }
+
+    public static void setStaticObjectField(Class<?> clazz, String fieldName, Object value) {
+        throw new UnsupportedOperationException("Stub only");
+    }
 }

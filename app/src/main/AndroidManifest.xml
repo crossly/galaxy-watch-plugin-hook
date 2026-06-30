@@ -17,6 +17,6 @@
             android:value="93" />
         <meta-data
             android:name="xposedscope"
-            android:value="android;system;com.samsung.android.app.watchmanager;com.samsung.wearable.watch7plugin" />
+            android:value="android;system;com.google.android.wearable.app.cn;com.samsung.android.app.watchmanager;com.samsung.wearable.watch7plugin" />
     </application>
 </manifest>

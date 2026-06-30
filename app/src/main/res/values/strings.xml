@@ -5,6 +5,7 @@
     <string-array name="xposedscope">
         <item>android</item>
         <item>system</item>
+        <item>com.google.android.wearable.app.cn</item>
         <item>com.samsung.android.app.watchmanager</item>
         <item>com.samsung.wearable.watch7plugin</item>
     </string-array>

@@ -26,4 +26,27 @@ public class CompanionIdentityPolicyTest {
         assertTrue(CompanionIdentityPolicy.shouldSpoof("key_model_number"));
         assertTrue(CompanionIdentityPolicy.shouldSpoof("key_sales_code"));
     }
+
+    @Test
+    public void mapsGoogleWearPhoneIdentityPropertiesToSamsungUsModel() {
+        assertEquals(
+                "SAMSUNG",
+                CompanionIdentityPolicy.systemPropertyValueFor("ro.product.manufacturer", "HONOR"));
+        assertEquals(
+                "samsung",
+                CompanionIdentityPolicy.systemPropertyValueFor("ro.product.brand", "HONOR"));
+        assertEquals(
+                "SM-S938U",
+                CompanionIdentityPolicy.systemPropertyValueFor("ro.product.model", "BKQ-AN90"));
+        assertEquals(
+                "XAA",
+                CompanionIdentityPolicy.systemPropertyValueFor("ro.csc.sales_code", "CHC"));
+    }
+
+    @Test
+    public void leavesUnrelatedSystemPropertiesUntouched() {
+        assertEquals(
+                "original",
+                CompanionIdentityPolicy.systemPropertyValueFor("ro.boot.verifiedbootstate", "original"));
+    }
 }

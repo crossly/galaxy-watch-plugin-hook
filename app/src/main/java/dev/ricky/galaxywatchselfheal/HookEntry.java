@@ -15,6 +15,7 @@ import java.util.List;
 
 public final class HookEntry implements IXposedHookLoadPackage {
     private static final String ANDROID_PACKAGE = "android";
+    private static final String GOOGLE_WEAR_PACKAGE = "com.google.android.wearable.app.cn";
     private static final String CDM_SERVICE =
             "com.android.server.companion.CompanionDeviceManagerService";
     private static final String CAPABILITY_DATA_SETTER =
@@ -24,6 +25,7 @@ public final class HookEntry implements IXposedHookLoadPackage {
     private static final long RETRY_RECOVERY_DELAY_MS = 120_000L;
     private static volatile boolean frameworkHookInstalled;
     private static volatile boolean companionIdentityHookInstalled;
+    private static volatile boolean googleWearIdentityHookInstalled;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -33,6 +35,9 @@ public final class HookEntry implements IXposedHookLoadPackage {
         }
 
         if (!WatchdogPolicy.isTargetPackage(lpparam.packageName)) {
+            if (GOOGLE_WEAR_PACKAGE.equals(lpparam.packageName)) {
+                hookGoogleWearCompanionIdentity(lpparam.classLoader);
+            }
             return;
         }
 
@@ -65,6 +70,56 @@ public final class HookEntry implements IXposedHookLoadPackage {
             log("hooked " + CDM_SERVICE + "#onStart()");
         } catch (Throwable t) {
             log("CompanionDeviceManagerService#onStart hook unavailable: " + t);
+        }
+    }
+
+    private static void hookGoogleWearCompanionIdentity(ClassLoader classLoader) {
+        if (googleWearIdentityHookInstalled) {
+            return;
+        }
+        googleWearIdentityHookInstalled = true;
+
+        spoofBuildIdentity();
+        try {
+            XposedHelpers.findAndHookMethod(
+                    "android.os.SystemProperties",
+                    classLoader,
+                    "get",
+                    String.class,
+                    new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            String key = (String) param.args[0];
+                            String originalValue = (String) param.getResult();
+                            String spoofedValue = CompanionIdentityPolicy.systemPropertyValueFor(
+                                    key,
+                                    originalValue);
+                            if (!spoofedValue.equals(originalValue)) {
+                                param.setResult(spoofedValue);
+                                log("spoofed Google Wear system property " + key + "=" + spoofedValue);
+                            }
+                        }
+                    });
+            log("hooked Google Wear companion identity");
+        } catch (Throwable t) {
+            log("Google Wear companion identity hook unavailable: " + t);
+        }
+    }
+
+    private static void spoofBuildIdentity() {
+        setBuildField("MANUFACTURER", CompanionIdentityPolicy.samsungManufacturer());
+        setBuildField("BRAND", CompanionIdentityPolicy.samsungBrand());
+        setBuildField("MODEL", CompanionIdentityPolicy.samsungModel());
+        setBuildField("DEVICE", CompanionIdentityPolicy.samsungDevice());
+        setBuildField("PRODUCT", CompanionIdentityPolicy.samsungProduct());
+    }
+
+    private static void setBuildField(String fieldName, String value) {
+        try {
+            XposedHelpers.setStaticObjectField(android.os.Build.class, fieldName, value);
+            log("spoofed Google Wear Build." + fieldName + "=" + value);
+        } catch (Throwable t) {
+            log("unable to spoof Google Wear Build." + fieldName + ": " + t);
         }
     }
 
