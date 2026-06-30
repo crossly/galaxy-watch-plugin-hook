@@ -92,4 +92,8 @@ public final class CompanionIdentityPolicy {
     public static String samsungProduct() {
         return SAMSUNG_S25_ULTRA_PRODUCT;
     }
+
+    public static String usaSalesCode() {
+        return USA_SALES_CODE;
+    }
 }

@@ -89,6 +89,22 @@ public class HookEntrySourceTest {
         assertTrue(hookSource.contains("CompanionIdentityPolicy.samsungManufacturer()"));
     }
 
+    @Test
+    public void watch7PluginHookSpoofsFeatureExchangeDataForWcsProvider() throws Exception {
+        String entrySource = read("app/src/main/java/dev/ricky/galaxywatchselfheal/HookEntry.java");
+        String hookSource = read(
+                "app/src/main/java/dev/ricky/galaxywatchselfheal/Watch7CapabilityExchangeHook.java");
+
+        assertTrue(entrySource.contains("Watch7CapabilityExchangeHook.install"));
+        assertTrue(hookSource.contains(
+                "com.samsung.android.companionservice.capability.CapabilityExchangeMessage"));
+        assertTrue(hookSource.contains("\"data\""));
+        assertTrue(hookSource.contains("key_manufacturer"));
+        assertTrue(hookSource.contains("key_model_number"));
+        assertTrue(hookSource.contains("key_sales_code"));
+        assertTrue(hookSource.contains("CompanionIdentityPolicy.usaSalesCode()"));
+    }
+
     private static String read(String path) throws Exception {
         Path root = Paths.get(System.getProperty("user.dir")).getParent();
         return new String(Files.readAllBytes(root.resolve(path)), StandardCharsets.UTF_8);

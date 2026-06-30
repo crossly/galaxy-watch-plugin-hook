@@ -45,6 +45,7 @@ public final class HookEntry implements IXposedHookLoadPackage {
         if (WatchdogPolicy.WATCH7_PLUGIN_PACKAGE.equals(lpparam.packageName)) {
             hookCompanionIdentityWrites(lpparam.classLoader);
             Watch7CompanionIdentityHook.install(lpparam.classLoader);
+            Watch7CapabilityExchangeHook.install(lpparam.classLoader);
             return;
         }
 
