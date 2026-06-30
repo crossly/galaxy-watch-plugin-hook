@@ -1,5 +1,8 @@
 package dev.ricky.galaxywatchselfheal;
 
+import android.content.Context;
+
+import dev.ricky.galaxywatchselfheal.core.CompanionIdentityPolicy;
 import dev.ricky.galaxywatchselfheal.core.WatchdogPolicy;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -14,10 +17,13 @@ public final class HookEntry implements IXposedHookLoadPackage {
     private static final String ANDROID_PACKAGE = "android";
     private static final String CDM_SERVICE =
             "com.android.server.companion.CompanionDeviceManagerService";
+    private static final String CAPABILITY_DATA_SETTER =
+            "com.samsung.android.basicdata.capability.CapabilityDataSetter";
     private static final String TAG_PREFIX = "GalaxyWatchPluginHook: ";
     private static final long BOOT_RECOVERY_DELAY_MS = 45_000L;
     private static final long RETRY_RECOVERY_DELAY_MS = 120_000L;
     private static volatile boolean frameworkHookInstalled;
+    private static volatile boolean companionIdentityHookInstalled;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -31,7 +37,12 @@ public final class HookEntry implements IXposedHookLoadPackage {
         }
 
         log("loaded for " + lpparam.packageName);
-        log("Samsung process hook is passive; framework companion recovery handles presence");
+        if (WatchdogPolicy.WATCH7_PLUGIN_PACKAGE.equals(lpparam.packageName)) {
+            hookCompanionIdentityWrites(lpparam.classLoader);
+            return;
+        }
+
+        log("Samsung process hook is passive for " + lpparam.packageName);
     }
 
     private static void hookCompanionDeviceManager(ClassLoader classLoader) {
@@ -54,6 +65,45 @@ public final class HookEntry implements IXposedHookLoadPackage {
             log("hooked " + CDM_SERVICE + "#onStart()");
         } catch (Throwable t) {
             log("CompanionDeviceManagerService#onStart hook unavailable: " + t);
+        }
+    }
+
+    private static void hookCompanionIdentityWrites(ClassLoader classLoader) {
+        if (companionIdentityHookInstalled) {
+            return;
+        }
+        companionIdentityHookInstalled = true;
+
+        try {
+            XposedHelpers.findAndHookMethod(
+                    CAPABILITY_DATA_SETTER,
+                    classLoader,
+                    "setPreference",
+                    Context.class,
+                    String.class,
+                    String.class,
+                    new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) {
+                            String preferenceKey = String.valueOf(param.args[1]);
+                            if (!CompanionIdentityPolicy.shouldSpoof(preferenceKey)) {
+                                return;
+                            }
+
+                            String originalValue = (String) param.args[2];
+                            String spoofedValue = CompanionIdentityPolicy.spoofedValueFor(
+                                    preferenceKey,
+                                    originalValue);
+                            param.args[2] = spoofedValue;
+                            log("spoofed companion identity preference "
+                                    + preferenceKey
+                                    + "="
+                                    + spoofedValue);
+                        }
+                    });
+            log("hooked " + CAPABILITY_DATA_SETTER + "#setPreference(String)");
+        } catch (Throwable t) {
+            log("CapabilityDataSetter#setPreference hook unavailable: " + t);
         }
     }
 

@@ -41,6 +41,26 @@ public class HookEntrySourceTest {
         assertTrue(source.contains("updateAssociation"));
     }
 
+    @Test
+    public void watch7PluginHookTargetsOnlyCompanionIdentityPreferences() throws Exception {
+        String source = read("app/src/main/java/dev/ricky/galaxywatchselfheal/HookEntry.java");
+
+        assertTrue(source.contains("com.samsung.android.basicdata.capability.CapabilityDataSetter"));
+        assertTrue(source.contains("setPreference"));
+        assertTrue(source.contains("CompanionIdentityPolicy.shouldSpoof"));
+    }
+
+    @Test
+    public void scopeDoesNotIncludeSamsungHealthMonitor() throws Exception {
+        String strings = read("app/src/main/res/values/strings.xml");
+        String scopeList = read("app/src/main/resources/META-INF/xposed/scope.list");
+        String manifest = read("app/src/main/AndroidManifest.xml");
+
+        assertTrue(!strings.contains("com.samsung.android.shealthmonitor"));
+        assertTrue(!scopeList.contains("com.samsung.android.shealthmonitor"));
+        assertTrue(!manifest.contains("com.samsung.android.shealthmonitor"));
+    }
+
     private static String read(String path) throws Exception {
         Path root = Paths.get(System.getProperty("user.dir")).getParent();
         return new String(Files.readAllBytes(root.resolve(path)), StandardCharsets.UTF_8);
