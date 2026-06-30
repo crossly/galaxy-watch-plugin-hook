@@ -74,6 +74,21 @@ public class HookEntrySourceTest {
         assertTrue(source.contains("Samsung process hook is passive for"));
     }
 
+    @Test
+    public void watch7PluginHookSpoofsWearCompanionIdentityModelOnly() throws Exception {
+        String entrySource = read("app/src/main/java/dev/ricky/galaxywatchselfheal/HookEntry.java");
+        String hookSource = read(
+                "app/src/main/java/dev/ricky/galaxywatchselfheal/Watch7CompanionIdentityHook.java");
+
+        assertTrue(entrySource.contains("Watch7CompanionIdentityHook.install"));
+        assertTrue(hookSource.contains("com.google.android.gms.internal.wear_companion.wt"));
+        assertTrue(hookSource.contains("\"e\""));
+        assertTrue(hookSource.contains("findSingleArgumentMethod"));
+        assertTrue(hookSource.contains("XposedBridge.hookMethod"));
+        assertTrue(hookSource.contains("\"q\""));
+        assertTrue(hookSource.contains("CompanionIdentityPolicy.samsungManufacturer()"));
+    }
+
     private static String read(String path) throws Exception {
         Path root = Paths.get(System.getProperty("user.dir")).getParent();
         return new String(Files.readAllBytes(root.resolve(path)), StandardCharsets.UTF_8);

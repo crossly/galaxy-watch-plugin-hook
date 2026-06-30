@@ -44,6 +44,12 @@ public class CompanionIdentityPolicyTest {
     }
 
     @Test
+    public void exposesSamsungS25UltraIdentityForWatch7EligibilityModel() {
+        assertEquals("SAMSUNG", CompanionIdentityPolicy.samsungManufacturer());
+        assertEquals("SM-S938U", CompanionIdentityPolicy.samsungModel());
+    }
+
+    @Test
     public void leavesUnrelatedSystemPropertiesUntouched() {
         assertEquals(
                 "original",
